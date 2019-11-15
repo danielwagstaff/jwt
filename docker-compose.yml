@@ -1,0 +1,27 @@
+version: "3.4"
+
+services:
+  sign-on:
+    image: triad/training/jwt/signon
+    container_name: signon-1
+    build:
+      context: "signon/"
+      dockerfile: ./src/main/docker/Dockerfile
+    ports:
+      - 7000:80
+  greeting:
+    image: triad/training/jwt/greeting
+    container_name: greeting-1
+    build:
+      context: "greeting/"
+      dockerfile: ./src/main/docker/Dockerfile
+    ports:
+      - 7100:80
+  demo:
+    image: triad/training/jwt/demo
+    container_name: demo-1
+    build:
+      context: "demo/"
+      dockerfile: ./src/main/docker/Dockerfile
+    ports:
+      - 7200:80

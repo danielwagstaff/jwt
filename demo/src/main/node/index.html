@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>JWT Demo</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+<style>
+    body {
+        font-family: "Lato", sans-serif
+    }
+
+    textarea {
+        resize: none;
+    }
+
+    textarea:read-only,
+    input:read-only {
+        background-color: #eee;
+        color: #000;
+    }
+</style>
+
+<body>
+    <div class="w3-container">
+        <h1>JWT Demo</h1>
+        <div>
+            <h2>How This Example Works</h2>
+            <img src="explanation.png"></img>
+            <ol>
+                <li>
+                    A Sign-On server verifies if the user is authorised. If they are, the server responds with a token
+                    (JWT). The payload of the token is not encrypted, but it does contain a digital signature, created
+                    with a Private key.
+                    <ul>
+                        <li>
+                            JWTs can be signed using a secret (with the HMAC algorithm) or a public/private key pair
+                            using RSA or ECDSA.
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    The JWT is stored locally by the client.
+                </li>
+                <li>
+                    When the client makes a request to a server that requires the JWT, the client supplies it (usually,
+                    and in this example, in the authorisation header).
+                </li>
+                <li>
+                    If the supplied JWT is valid (which might include satisfying other contraints such as the JWT expiry
+                    time), the Greeting server satisfies the request, otherwise a 401 (Unauthorized) response is given.
+                    <ul>
+                        <li>
+                            The Greeting server, has a copy of the Sign-On server's public key, which it uses to verify
+                            the JWT signature.
+                        </li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
+        <div class="w3-container w3-border">
+            <h2>Sign-On Server</h2>
+            <label for="sign-on-server-url">URL</label><input id="sign-on-server-url" type="text" name="sign-on-server"
+                value="http://localhost:7000">
+            <p>Provides the JSON Web Token, given an authorised request.</p>
+
+            <div class="w3-row w3-border w3-padding">
+                <h3>Public Key</h3>
+                <p>
+                    The Public Key is required by all those who wish to verify a JWT created by the Sign-On server.
+                </p>
+                <div class="w3-container w3-third">
+                    <button id="getPublicKey" class="w3-btn w3-block w3-green">Get Server's Public Key</button>
+                </div>
+                <div class="w3-container w3-rest">
+                    <textarea id="publicKey" class="w3-block" rows="6" readonly></textarea>
+                </div>
+            </div>
+
+            <div class="w3-border w3-padding">
+                <div class="w3-row">
+                    <h3>Authentication</h3>
+                    <p>
+                        If the user is successfully authenticated, they are provided with a JWT.
+                    </p>
+                    <div class="w3-container w3-padding">
+                        <label for="username">Username</label>
+                        <input id="username" type="text" name="username" value="dwagstaff">
+                        <label for="password">Password</label>
+                        <input id="password" type="text" name="password" value="myPa55w0rd!">
+                    </div>
+                </div>
+
+                <div class="w3-row">
+                    <div class="w3-container w3-third">
+                        <button id="createJwtGetRequest" class="w3-btn w3-block w3-green">Create JWT GET
+                            Request</button>
+                    </div>
+                </div>
+
+                <div class="w3-row">
+                    <div class="w3-container w3-padding">
+                        <label for="passwordHash">Password Hash</label>
+                        <input id="passwordHash" style='width: 50%' type="text" name="passwordHash" value="" readonly>
+                    </div>
+                </div>
+
+                <div class="w3-row">
+                    <div class="w3-container w3-padding">
+                        <label for="jwtGetRequest">JWT GET Request</label>
+                        <input id="jwtGetRequest" style='width: 70%' type="text" name="jwtGetRequest" value="" readonly>
+                    </div>
+                </div>
+
+                <div class="w3-row">
+                    <div class="w3-container w3-padding">
+                        <h4>Get JSON Web Token</h4>
+                        <p>
+                            Perform the GET request, to receive the JWT from the Sign-On server.
+                        </p>
+                        <div class="w3-container w3-third">
+                            <button id="getUserJwt" class="w3-btn w3-block w3-green">Get JWT for User</button>
+                        </div>
+                        <div class="w3-container w3-rest">
+                            <textarea id="jwt" style='width: 100%' rows="5" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w3-row w3-border w3-padding">
+                <h3>Decoded JSON Web Token</h3>
+                <div class="w3-container w3-third">
+                    <button id="decodeJwt" class="w3-btn w3-block w3-green">Decode JWT</button>
+                </div>
+                <div class="w3-container w3-rest">
+                    <textarea id="decodedJwt" style='width: 100%' rows="13" readonly></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="w3-container w3-border">
+            <h2>Greeting Server</h2>
+            <label for="greeting-server-url">URL</label><input id="greeting-server-url" type="text"
+                name="greeting-server" value="http://localhost:7100">
+            <p>Provides a greeting, given a request with JWT</p>
+
+            <div class="w3-border w3-padding">
+
+                <div class="w3-row">
+                    <h3>Authorisation and Authentication</h3>
+                    <p>
+                        Load the JWT into the Authentication header to supply the JWT to the Greeting server. The JWT
+                        <b><i>may</i></b> contain information on which groups the user belongs (authorisation) - in this
+                        case it does.
+                    </p>
+                    <div class="w3-container w3-padding">
+                        <button id="specifyJwtAsAuth" class="w3-btn w3-blue">Load JWT into Authorisation Header using
+                            Bearer
+                            Schema</button>
+                        <button id="clearJwtAsAuth" class="w3-btn w3-black">Clear JWT</button>
+
+                        <div class="w3-row">
+                            <textarea id="authorisation" style='width: 100%' rows="6" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w3-row">
+                    <div class="w3-container">
+                        <ul>
+                            <li>/greeting/open: Open to anyone</li>
+                            <li>/greeting/open-secinfo: Open to anyone, but provides information as to the requesting
+                                user (if available)</li>
+                            <li>/greeting/restricted: Only open to memeber of the "admin group"</li>
+                            <li>/greeting/restricted/subject: Only open to memeber of the "admin group" and provides the
+                                name of the subject of the JWT</li>
+                        </ul>
+                        <div class="w3-bar">
+                            <button id="getGreetingOpen" class="w3-btn w3-blue">GET /greeting/open</button>
+                            <button id="getGreetingOpenSecInfo" class="w3-btn w3-blue">GET
+                                /greeting/open-secinfo</button>
+                            <button id="getGreetingRestricted" class="w3-btn w3-blue">GET /greeting/restricted</button>
+                            <button id="getGreetingRestrictedSubject" class="w3-btn w3-blue">GET
+                                /greeting/restricted/subject</button>
+                            <button id="clearResponse" class="w3-btn w3-black">Clear Response</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w3-row">
+                    <div class="w3-container">
+                        <textarea id="getResponse" class="w3-block" rows="6" readonly></textarea>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<script>
+    const signOnServerUrl = function () { return document.getElementById("sign-on-server-url").value };
+    const greetingServerUrl = function () { return document.getElementById("greeting-server-url").value };
+
+    document.getElementById("getPublicKey").onclick = function () {
+        makeGetRequest(signOnServerUrl() + "/token/public-key", document.getElementById("publicKey"));
+    };
+
+    document.getElementById("createJwtGetRequest").onclick = async function () {
+        const user = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+
+        const msgBuffer = new TextEncoder('utf-8').encode(password);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => ('00' + b.toString(16)).slice(-2)).join('');
+        document.getElementById("passwordHash").value = hashHex;
+
+        const jwtGetRequest = signOnServerUrl() + "/token/" + user + "/" + hashHex;
+        document.getElementById("jwtGetRequest").value = jwtGetRequest;
+    };
+
+    document.getElementById("getUserJwt").onclick = async function () {
+        makeGetRequest(document.getElementById("jwtGetRequest").value, document.getElementById("jwt"));
+    };
+
+    document.getElementById("decodeJwt").onclick = function () {
+        const jwt = document.getElementById("jwt").value;
+        const decodedJwt = JSON.parse(atob(jwt.split('.')[1]));
+        const formattedDecodedJwt = JSON.stringify(decodedJwt, null, 2);
+        document.getElementById("decodedJwt").value = formattedDecodedJwt;
+    };
+
+    document.getElementById("specifyJwtAsAuth").onclick = function () {
+        const jwt = document.getElementById("jwt").value;
+        document.getElementById("authorisation").value = 'Bearer ' + jwt;
+    };
+
+    document.getElementById("clearJwtAsAuth").onclick = function () {
+        document.getElementById("authorisation").value = "";
+    };
+
+    document.getElementById("clearResponse").onclick = function () {
+        document.getElementById("getResponse").value = "";
+    };
+
+    document.getElementById("getGreetingOpen").onclick = async function () {
+        makeGetRequest(greetingServerUrl() + "/greeting/open", document.getElementById("getResponse"));
+    };
+
+    document.getElementById("getGreetingOpenSecInfo").onclick = async function () {
+        makeAuthGetRequest(greetingServerUrl() + "/greeting/open-secinfo", document.getElementById("getResponse"));
+    };
+
+    document.getElementById("getGreetingRestricted").onclick = async function () {
+        makeAuthGetRequest(greetingServerUrl() + "/greeting/restricted", document.getElementById("getResponse"));
+    };
+
+    document.getElementById("getGreetingRestrictedSubject").onclick = async function () {
+        makeAuthGetRequest(greetingServerUrl() + "/greeting/restricted/subject", document.getElementById("getResponse"));
+    };
+
+    const makeGetRequest = function (request, responseElement) {
+        const xmlHttp = new XMLHttpRequest();
+        const asyncReq = false;
+        xmlHttp.open("GET", request, asyncReq);
+        const sendBody = null;
+        xmlHttp.send(sendBody);
+        if (xmlHttp.status === 200) {
+            responseElement.value = xmlHttp.responseText;
+        } else {
+            responseElement.value = xmlHttp.status + ": " + xmlHttp.statusText;
+        }
+    }
+
+    const makeAuthGetRequest = function (request, responseElement) {
+        const xmlHttp = new XMLHttpRequest();
+        const asyncReq = false;
+        xmlHttp.open("GET", request, asyncReq);
+        xmlHttp.setRequestHeader('Authorization', document.getElementById("authorisation").value)
+        const sendBody = null;
+        xmlHttp.send(sendBody);
+        if (xmlHttp.status === 200) {
+            responseElement.value = xmlHttp.responseText;
+        } else {
+            responseElement.value = xmlHttp.status + ": " + xmlHttp.statusText;
+        }
+    }
+</script>
+
+</html>

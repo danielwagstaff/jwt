@@ -17,7 +17,7 @@ The Sign-On Service authenticates and, if authentication is successful, provides
 
 `mvn package`
 
-### Demo Service
+## Demo Service
 The Demo Service provides some explanation on the basics of JWT and provides test-points for the services.
 
 #### Build

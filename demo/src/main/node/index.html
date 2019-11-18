@@ -101,13 +101,6 @@
 
                 <div class="w3-row">
                     <div class="w3-container w3-padding">
-                        <label for="passwordHash">Password Hash</label>
-                        <input id="passwordHash" style='width: 50%' type="text" name="passwordHash" value="" readonly>
-                    </div>
-                </div>
-
-                <div class="w3-row">
-                    <div class="w3-container w3-padding">
                         <label for="jwtGetRequest">JWT GET Request</label>
                         <input id="jwtGetRequest" style='width: 70%' type="text" name="jwtGetRequest" value="" readonly>
                     </div>
@@ -213,13 +206,7 @@
         const user = document.getElementById("username").value;
         const password = document.getElementById("password").value;
 
-        const msgBuffer = new TextEncoder('utf-8').encode(password);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hashHex = hashArray.map(b => ('00' + b.toString(16)).slice(-2)).join('');
-        document.getElementById("passwordHash").value = hashHex;
-
-        const jwtGetRequest = signOnServerUrl() + "/token/" + user + "/" + hashHex;
+        const jwtGetRequest = signOnServerUrl() + "/token/" + user + "/" + password;
         document.getElementById("jwtGetRequest").value = jwtGetRequest;
     };
 

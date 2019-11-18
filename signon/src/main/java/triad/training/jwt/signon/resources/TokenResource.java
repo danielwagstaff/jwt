@@ -26,10 +26,10 @@ public class TokenResource {
     }
 
     @GET
-    @Path("{user}/{passwordHash}")
-    public Response getToken(@PathParam("user") String user, @PathParam("passwordHash") String passwordHash) {
+    @Path("{user}/{password}")
+    public Response getToken(@PathParam("user") String user, @PathParam("password") String password) {
         LOGGER.info("GET JWT for {}", user);
-        return serviceCall(() -> tokenService.getToken(user, passwordHash));
+        return serviceCall(() -> tokenService.getToken(user, password));
     }
 
     @GET

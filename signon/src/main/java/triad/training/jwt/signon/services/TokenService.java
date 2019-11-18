@@ -37,8 +37,9 @@ public class TokenService {
         this.tokenRepository = tokenRepository;
     }
 
-    public Optional<String> getToken(final String user, final String passwordHash) throws Exception {
+    public Optional<String> getToken(final String user, final String password) throws Exception {
         String userHash = new DigestUtils("SHA-256").digestAsHex(user);
+        String passwordHash = new DigestUtils("SHA-256").digestAsHex(password);
         String userPasswordHash = new DigestUtils("SHA-256").digestAsHex(userHash + passwordHash);
         LOGGER.info("userHash {} passwordHash {} userPasswordHash {}", userHash, passwordHash, userPasswordHash);
         LOGGER.info("Retrieving JWT for {} with key {}", user, userPasswordHash);
